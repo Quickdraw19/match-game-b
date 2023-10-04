@@ -1,0 +1,103 @@
+<!-- Chat GPT example:
+This code creates a simple matching game with a 4x6 grid of cards. Players need to find all the matching pairs 
+to win the game. Cards are shuffled randomly at the start of the game, and when two cards are flipped, they are 
+checked for a match. If they match, they stay face up; otherwise, they are flipped back over after a brief delay.
+
+You can customize the symbols array with different symbols or icons to create your own themed matching game. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matching Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 100px);
+            grid-gap: 10px;
+        }
+        .card {
+            width: 100px;
+            height: 100px;
+            background-color: lightgray;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .card.matched {
+            background-color: green;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-board" id="game-board"></div>
+    <script>
+        const symbols = ['🌟', '🍎', '🍕', '🚀', '🐶', '🌈', '🎉', '🌺', '🚲', '📚', '🎈', '🍭'];
+        const cards = [...symbols, ...symbols]; // Create pairs of cards
+        
+        const gameBoard = document.getElementById('game-board');
+        let flippedCards = [];
+        let matchedPairs = 0;
+
+        // Shuffle the cards
+        cards.sort(() => Math.random() - 0.5);
+
+        // Create and render cards
+        cards.forEach((symbol, index) => {
+            const card = document.createElement('div');
+            card.classList.add('card');
+            card.dataset.symbol = symbol;
+            card.dataset.index = index;
+            card.addEventListener('click', handleCardClick);
+            gameBoard.appendChild(card);
+        });
+
+        function handleCardClick() {
+            const card = this;
+
+            // Do nothing if the card is already matched or two cards are already flipped
+            if (card.classList.contains('matched') || flippedCards.length === 2) {
+                return;
+            }
+
+            card.textContent = card.dataset.symbol; // Show the card's symbol
+
+            flippedCards.push(card);
+
+            if (flippedCards.length === 2) {
+                const [card1, card2] = flippedCards;
+
+                if (card1.dataset.symbol === card2.dataset.symbol) {
+                    // Matched
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    flippedCards = [];
+                    matchedPairs++;
+
+                    if (matchedPairs === symbols.length) {
+                        alert('Congratulations! You won the game!');
+                    }
+                } else {
+                    // Not matched, flip cards back after a delay
+                    setTimeout(() => {
+                        card1.textContent = '';
+                        card2.textContent = '';
+                        flippedCards = [];
+                    }, 1000);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
